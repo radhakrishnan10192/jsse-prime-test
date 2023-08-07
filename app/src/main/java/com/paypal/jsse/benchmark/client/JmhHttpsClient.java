@@ -8,9 +8,11 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,7 +54,9 @@ public abstract class JmhHttpsClient<C> {
 
         @TearDown
         public void report() {
-            sslMetrics.report();
+            Mono.just("test").delayElement(Duration.ofMillis(1000))
+                            .subscribe(s ->  sslMetrics.report());
+
         }
     }
 
