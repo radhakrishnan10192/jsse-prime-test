@@ -1,0 +1,29 @@
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="CONSOLE-MIN" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <logger name="com.paypal.jsse.benchmark.client.JmhHttpsClient" level="info" additivity="false">
+        <appender-ref ref="CONSOLE-MIN"/>
+    </logger>
+
+    <logger name="io.netty.channel.ChannelInitializer" level="error"/>
+
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>

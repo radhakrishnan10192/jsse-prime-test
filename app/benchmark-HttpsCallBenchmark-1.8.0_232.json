@@ -1,0 +1,57 @@
+[
+    {
+        "jmhVersion" : "1.28",
+        "benchmark" : "com.paypal.jsse.benchmark.jmh.HttpsCallBenchmark.execute",
+        "mode" : "avgt",
+        "threads" : 4,
+        "forks" : 1,
+        "jvm" : "/Library/Java/JavaVirtualMachines/zulu8.42.0.10-sa-jdk8.0.232-macosx_x64/jre/bin/java",
+        "jvmArgs" : [
+            "-Xverify:none",
+            "-XX:TieredStopAtLevel=1",
+            "-Dtest.mode=jmh-client-calls",
+            "-Djmh.threads=4"
+        ],
+        "jdkVersion" : "1.8.0_232",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "25.232-b18",
+        "warmupIterations" : 1,
+        "warmupTime" : "5000 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 3,
+        "measurementTime" : "60000 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 133.21274742910433,
+            "scoreError" : 22.65150507377386,
+            "scoreConfidence" : [
+                110.56124235533046,
+                155.86425250287817
+            ],
+            "scorePercentiles" : {
+                "0.0" : 131.99948189264163,
+                "50.0" : 133.1578863649292,
+                "90.0" : 134.48087402974215,
+                "95.0" : 134.48087402974215,
+                "99.0" : 134.48087402974215,
+                "99.9" : 134.48087402974215,
+                "99.99" : 134.48087402974215,
+                "99.999" : 134.48087402974215,
+                "99.9999" : 134.48087402974215,
+                "100.0" : 134.48087402974215
+            },
+            "scoreUnit" : "ms/op",
+            "rawData" : [
+                [
+                    134.48087402974215,
+                    131.99948189264163,
+                    133.1578863649292
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    }
+]
+
+
