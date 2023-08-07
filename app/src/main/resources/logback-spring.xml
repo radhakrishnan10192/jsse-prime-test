@@ -20,8 +20,6 @@
         <appender-ref ref="CONSOLE-MIN"/>
     </logger>
 
-    <logger name="com.paypal.jsse.benchmark.jmh.HttpsCallBenchmark" level="error"/>.
-
     <logger name="io.netty.channel.ChannelInitializer" level="error"/>
 
     <root level="info">
