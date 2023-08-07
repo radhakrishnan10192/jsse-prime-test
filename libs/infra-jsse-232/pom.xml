@@ -21,6 +21,7 @@
         <dependency>
             <groupId>com.paypal.jsse.test</groupId>
             <artifactId>infra-jsse-cache-provider</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
