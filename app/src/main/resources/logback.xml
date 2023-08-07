@@ -22,6 +22,8 @@
 
     <logger name="io.netty.channel.ChannelInitializer" level="error"/>
 
+    <logger name="io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider" level="error" />
+
     <root level="info">
         <appender-ref ref="CONSOLE"/>
     </root>
