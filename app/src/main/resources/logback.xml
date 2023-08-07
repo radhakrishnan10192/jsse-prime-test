@@ -24,6 +24,8 @@
 
     <logger name="io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider" level="error" />
 
+    <logger name="reactor.netty.http.client.HttpClientConnect" level="error"/>
+
     <root level="info">
         <appender-ref ref="CONSOLE"/>
     </root>
