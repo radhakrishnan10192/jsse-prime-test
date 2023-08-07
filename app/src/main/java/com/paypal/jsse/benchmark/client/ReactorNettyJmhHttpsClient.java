@@ -46,6 +46,9 @@ public class ReactorNettyJmhHttpsClient extends JmhHttpsClient<HttpClient> {
                 .doOnError(throwable -> logger.debug(throwable.getMessage(), throwable))
                 .onErrorReturn("failed")
                 .block();
+        if(response.equalsIgnoreCase("Hello World")) {
+            requestsCount.incrementAndGet();
+        }
         if(logger.isDebugEnabled()) {
             logger.debug("Response: " + response);
         }

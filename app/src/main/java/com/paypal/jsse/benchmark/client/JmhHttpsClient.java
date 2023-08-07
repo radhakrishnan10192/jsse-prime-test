@@ -15,12 +15,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class JmhHttpsClient<C> {
 
     private static final Logger logger = LoggerFactory.getLogger(JmhHttpsClient.class);
 
     protected final C client;
+
+    protected static final AtomicInteger requestsCount = new AtomicInteger(0);
 
     public JmhHttpsClient() {
         final SysProps.ServerConfig serverConfig = new SysProps.ServerConfig();
@@ -70,6 +73,7 @@ public abstract class JmhHttpsClient<C> {
                 logger.info("99th percentile: {}", sslHandshakeTimes.getPercentile(99));
                 logger.info("Average time: {}", sslHandshakeTimes.getMean());
                 logger.info("Total number of handshakes: {}", sslHandshakeTimes.getN());
+                logger.info("Total number of requests: {}", requestsCount.get());
             }
         }
     }
