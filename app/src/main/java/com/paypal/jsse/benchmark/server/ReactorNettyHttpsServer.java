@@ -23,7 +23,8 @@ public class ReactorNettyHttpsServer extends HttpsServer<DisposableServer> {
     @Override
     public DisposableServer createServer(final String host,
                                          final int port) {
-        final DisposableServer disposableServer = HttpServer.create()
+        final DisposableServer disposableServer = HttpServer
+                .create()
                 .port(port)
                 .secure(SslProvider.builder().sslContext(nettySslContext(sslContext(false))).build())
                 .route(routes -> routes

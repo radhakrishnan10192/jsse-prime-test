@@ -1,5 +1,7 @@
 package com.paypal.jsse.benchmark.client;
 
+import com.paypal.jsse.benchmark.client.metrics.Metric;
+import com.paypal.jsse.benchmark.client.metrics.MetricsRegistry;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -17,14 +19,28 @@ import reactor.netty.tcp.SslProvider;
 
 import javax.net.ssl.SSLContext;
 import java.math.BigDecimal;
+import java.util.concurrent.CompletionStage;
 
 import static com.paypal.jsse.benchmark.SSLContextFactory.sslContext;
 
-public class ReactorNettyJmhHttpsClient extends JmhHttpsClient<HttpClient> {
-    private static final Logger logger = LoggerFactory.getLogger(ReactorNettyJmhHttpsClient.class);
+public class ReactorNettyHttpsClient extends HttpsClient<HttpClient> {
+    private static final Logger logger = LoggerFactory.getLogger(ReactorNettyHttpsClient.class);
+
+    public ReactorNettyHttpsClient() {
+        super();
+    }
+
+    public ReactorNettyHttpsClient(MetricsRegistry metricsRegistry) {
+        super(metricsRegistry);
+    }
+
+    public ReactorNettyHttpsClient(String host, int port, MetricsRegistry registry) {
+        super(host, port, registry);
+    }
 
     @Override
-    public HttpClient createHttpsClient(String host, int port) {
+    public HttpClient createHttpsClient(final String host,
+                                        final int port) {
         return HttpClient.create(ConnectionProvider.newConnection())
                 .keepAlive(false)
                 .secure(SslProvider.builder().sslContext(nettySslContext(sslContext(true))).build())
@@ -32,34 +48,51 @@ public class ReactorNettyJmhHttpsClient extends JmhHttpsClient<HttpClient> {
     }
 
     @Override
-    public void executeHttpsCall(final Metrics metrics) {
-        final String response = client
+    protected HttpClient createHttpsClient(final String host,
+                                           final int port,
+                                           final MetricsRegistry metricsRegistry) {
+        final Metric.SSLMetric sslMetrics = new Metric.SSLMetric();
+        metricsRegistry.addMetric(sslMetrics);
+        return createHttpsClient(host, port)
                 .doOnChannelInit((observer, channel, address) -> {
                     final ChannelPipeline pipeline = channel.pipeline();
                     pipeline.addBefore(NettyPipeline.SslHandler,
                             "SslHandshakeTimeRecorder",
-                            new SslHandshakeTimeRecorder(metrics));
-                })
+                            new SslHandshakeTimeRecorder(sslMetrics));
+                });
+    }
+
+    @Override
+    public String executeHttpsCall(final String path) {
+        final String response = client
                 .get()
-                .uri("/hi")
+                .uri(path)
                 .responseSingle((resp, bytes) -> bytes.asString())
                 .doOnError(throwable -> logger.debug(throwable.getMessage(), throwable))
-                .onErrorReturn("failed")
                 .block();
-        if(response.equalsIgnoreCase("Hello World")) {
-            requestsCount.incrementAndGet();
-        }
         if(logger.isDebugEnabled()) {
             logger.debug("Response: " + response);
         }
+        return response;
     }
 
-    private class SslHandshakeTimeRecorder extends ChannelInboundHandlerAdapter {
+    @Override
+    public CompletionStage<String> executeHttpsCallAsync(String path) {
+        return client
+                .get()
+                .uri(path)
+                .responseSingle((resp, bytes) -> bytes.asString())
+                .doOnError(throwable -> logger.debug(throwable.getMessage(), throwable))
+                .onErrorReturn("failed")
+                .toFuture();
+    }
 
-        private final Metrics metrics;
+    private static class SslHandshakeTimeRecorder extends ChannelInboundHandlerAdapter {
 
-        public SslHandshakeTimeRecorder(Metrics metrics) {
-            this.metrics = metrics;
+        private final Metric.SSLMetric sslMetrics;
+
+        public SslHandshakeTimeRecorder(final Metric.SSLMetric sslMetrics) {
+            this.sslMetrics = sslMetrics;
         }
 
         @Override
@@ -70,7 +103,7 @@ public class ReactorNettyJmhHttpsClient extends JmhHttpsClient<HttpClient> {
                     .addListener(f -> {
                         ctx.pipeline().remove(this);
                         final BigDecimal elapsedTime = elapsedTime(tlsHandshakeTimeStart);
-                        metrics.getSslMetrics().addSSLHandshakeTime(elapsedTime.doubleValue());
+                        sslMetrics.addMetric(elapsedTime.doubleValue());
                     });
             ctx.fireChannelActive();
         }

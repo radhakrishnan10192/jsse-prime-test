@@ -1,10 +1,12 @@
-package com.paypal.jsse.benchmark.jmh;
+package com.paypal.jsse.benchmark.client.jmh;
 
 import com.paypal.jsse.benchmark.SysProps;
-import com.paypal.jsse.benchmark.client.JmhHttpsClient;
+import com.paypal.jsse.benchmark.client.HttpsClient;
+import com.paypal.jsse.benchmark.client.metrics.JMHMetricsRegistry;
 import com.paypal.jsse.benchmark.server.HttpsServer;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 
@@ -13,10 +15,12 @@ import java.util.Optional;
 @State(Scope.Benchmark)
 public class HttpsCallBenchmark {
 
-    private final JmhHttpsClient<?> client;
-    private final HttpsServer<?> server;
+    private HttpsClient<?> client;
+    private HttpsServer<?> server;
+    private JMHMetricsRegistry metricsRegistry;
 
-    public HttpsCallBenchmark() {
+    @Setup
+    public void setup(final JMHMetricsRegistry metricsRegistry) {
         final boolean isStartEmbeddedServer = new SysProps.HttpCallBenchmarkConfig().isStartEmbeddedServer();
         if(isStartEmbeddedServer) {
             final String serverType = SysProps.ServerType.serverTypePropVal();
@@ -28,21 +32,17 @@ public class HttpsCallBenchmark {
             server = null;
         }
 
+        this.metricsRegistry = metricsRegistry;
         final String clientType = SysProps.ClientType.clientTypePropVal();
         final Optional<SysProps.ClientType> clientTypeOpt = SysProps.ClientType.getClientType(clientType);
         client = clientTypeOpt
-                .map(clType -> clType.getClient().get())
+                .map(clType -> clType.getClient().apply(metricsRegistry))
                 .orElseThrow(() -> new RuntimeException("Invalid client type : " + clientType));
     }
 
-    public HttpsCallBenchmark(final JmhHttpsClient<?> client, HttpsServer<?> server) {
-        this.client = client;
-        this.server = server;
-    }
-
     @Benchmark
-    public void execute(final JmhHttpsClient.Metrics metrics) {
-        client.executeHttpsCall(metrics);
+    public void execute() {
+        client.executeHttpsCall();
     }
 
     @TearDown
@@ -50,6 +50,7 @@ public class HttpsCallBenchmark {
         if(server != null) {
             server.stopServer();
         }
+        this.metricsRegistry.report();
     }
 
 }

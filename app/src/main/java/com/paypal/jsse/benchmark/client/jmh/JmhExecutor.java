@@ -1,4 +1,4 @@
-package com.paypal.jsse.benchmark.jmh;
+package com.paypal.jsse.benchmark.client.jmh;
 
 import com.paypal.jsse.benchmark.SysProps;
 import org.openjdk.jmh.annotations.Mode;
@@ -37,6 +37,12 @@ public class JmhExecutor {
                             jmhConfig.getBenchmarkTester(),
                             System.getProperty("java.version")))
                     .timeUnit(TimeUnit.MILLISECONDS);
+            if(jmhConfig.getWarmupBatchSize() > 0) {
+                optionsBuilder.warmupBatchSize(jmhConfig.getWarmupBatchSize());
+            }
+            if(jmhConfig.getMeasurementBatchSize() > 0) {
+                optionsBuilder.measurementBatchSize(jmhConfig.getMeasurementBatchSize());
+            }
             if(jmhConfig.isEnableJFRProfiler()) {
                 optionsBuilder.addProfiler(JavaFlightRecorderProfiler.class);
             }

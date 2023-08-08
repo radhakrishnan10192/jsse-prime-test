@@ -20,6 +20,14 @@
         <appender-ref ref="CONSOLE-MIN"/>
     </logger>
 
+    <logger name="com.paypal.jsse.benchmark.client.lnp.HttpsClientLoadSim" level="info" additivity="false">
+        <appender-ref ref="CONSOLE-MIN"/>
+    </logger>
+
+    <logger name="com.paypal.jsse.benchmark.client.metrics.Metric" level="info" additivity="false">
+        <appender-ref ref="CONSOLE-MIN"/>
+    </logger>
+
     <logger name="io.netty.channel.ChannelInitializer" level="error"/>
 
     <logger name="io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider" level="error" />

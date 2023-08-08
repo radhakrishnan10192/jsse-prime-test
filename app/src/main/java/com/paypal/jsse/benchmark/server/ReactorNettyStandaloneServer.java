@@ -4,8 +4,8 @@ import com.paypal.jsse.benchmark.SysProps;
 
 import java.util.Optional;
 
-public class StandaloneServer {
-    public StandaloneServer() {
+public class ReactorNettyStandaloneServer {
+    public ReactorNettyStandaloneServer() {
         final String serverType = SysProps.ServerType.serverTypePropVal();
         final Optional<SysProps.ServerType> serverTypeOptional = SysProps.ServerType.getServerType(serverType);
         final HttpsServer<?> server  = serverTypeOptional

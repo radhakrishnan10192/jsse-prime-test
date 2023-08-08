@@ -1,13 +1,17 @@
 package com.paypal.jsse.benchmark;
 
-import com.paypal.jsse.benchmark.client.JmhHttpsClient;
-import com.paypal.jsse.benchmark.client.ReactorNettyJmhHttpsClient;
-import com.paypal.jsse.benchmark.jmh.HttpsCallBenchmark;
+import com.paypal.jsse.benchmark.client.HttpsClient;
+import com.paypal.jsse.benchmark.client.ReactorNettyHttpsClient;
+import com.paypal.jsse.benchmark.client.jmh.HttpsCallBenchmark;
+import com.paypal.jsse.benchmark.client.lnp.HttpsClientLoadSim;
+import com.paypal.jsse.benchmark.client.lnp.ReactorNettyHttpsClientLoadSim;
+import com.paypal.jsse.benchmark.client.metrics.MetricsRegistry;
 import com.paypal.jsse.benchmark.server.HttpsServer;
 import com.paypal.jsse.benchmark.server.ReactorNettyHttpsServer;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class SysProps {
@@ -70,25 +74,37 @@ public class SysProps {
     }
 
     public enum ClientType {
-        REACTOR_NETTY_CLIENT("RN-CLIENT", ReactorNettyJmhHttpsClient::new);
+        REACTOR_NETTY_CLIENT(
+                "RN-CLIENT",
+                ReactorNettyHttpsClient::new,
+                ReactorNettyHttpsClientLoadSim::new
+        );
 
         private final String shortName;
-        private final Supplier<JmhHttpsClient<?>> client;
+        private final Function<MetricsRegistry, HttpsClient<?>> client;
+
+        private final Supplier<HttpsClientLoadSim<?>> loadSim;
 
         private static final String CLIENT_TYPE_PARAM = "client.type";
 
         ClientType(final String shortName,
-                   final Supplier<JmhHttpsClient<?>> client) {
+                   final Function<MetricsRegistry, HttpsClient<?>> client,
+                   final Supplier<HttpsClientLoadSim<?>> loadSim) {
             this.shortName = shortName;
             this.client = client;
+            this.loadSim = loadSim;
         }
 
         public String getShortName() {
             return shortName;
         }
 
-        public Supplier<JmhHttpsClient<?>> getClient() {
+        public Function<MetricsRegistry, HttpsClient<?>> getClient() {
             return client;
+        }
+
+        public Supplier<HttpsClientLoadSim<?>> getLoadSim() {
+            return loadSim;
         }
 
         public static String clientTypePropVal() {
@@ -107,7 +123,7 @@ public class SysProps {
         final boolean startEmbeddedServer;
 
         public HttpCallBenchmarkConfig() {
-            this.startEmbeddedServer = readProperty("start.embedded.server", Boolean.class, true);
+            this.startEmbeddedServer = readProperty("start.embedded.server", Boolean.class, false);
         }
 
         public boolean isStartEmbeddedServer() {
@@ -119,8 +135,10 @@ public class SysProps {
         final int forks;
         final int warmupTime;
         final int warmupIterations;
+        final int warmupBatchSize;
         final int measurementTime;
         final int measurementIterations;
+        final int measurementBatchSize;
         final String benchmarkMode;
         final boolean enableJFRProfiler;
         final boolean enableGCProfiler;
@@ -128,16 +146,18 @@ public class SysProps {
         final String benchmarkTester;
 
         public JMHConfig() {
-            forks = readProperty("jmh.forks", Integer.class, 1);
-            warmupTime = readProperty("jmh.warmup.time.ms", Integer.class, 5000);
-            warmupIterations = readProperty("jmh.warmup.iterations", Integer.class, 1);
-            measurementTime = readProperty("jmh.measurement.time.ms", Integer.class, 60000);
-            measurementIterations = readProperty("jmh.measurement.iterations", Integer.class, 3);
-            benchmarkMode = readProperty("jmh.benchmark.mode", String.class, "AverageTime");
-            enableJFRProfiler = readProperty("jmh.enable.jfr.profiler", Boolean.class, false);
-            enableGCProfiler = readProperty("jmh.enable.gc.profiler", Boolean.class, false);
-            threads = readProperty("jmh.threads", Integer.class, Runtime.getRuntime().availableProcessors());
-            benchmarkTester = readProperty("jmh.benchmark.testClass", String.class, HttpsCallBenchmark.class.getSimpleName());
+            this.forks = readProperty("jmh.forks", Integer.class, 1);
+            this.warmupTime = readProperty("jmh.warmup.time.ms", Integer.class, 5000);
+            this.warmupIterations = readProperty("jmh.warmup.iterations", Integer.class, 1);
+            this.warmupBatchSize = readProperty("jmh.warmup.batch.size", Integer.class, -1);
+            this.measurementTime = readProperty("jmh.measurement.time.ms", Integer.class, 60000);
+            this.measurementIterations = readProperty("jmh.measurement.iterations", Integer.class, 3);
+            this.measurementBatchSize = readProperty("jmh.measurement.batch.size", Integer.class, -1);
+            this.benchmarkMode = readProperty("jmh.benchmark.mode", String.class, "AverageTime");
+            this.enableJFRProfiler = readProperty("jmh.enable.jfr.profiler", Boolean.class, false);
+            this.enableGCProfiler = readProperty("jmh.enable.gc.profiler", Boolean.class, false);
+            this.threads = readProperty("jmh.threads", Integer.class, Runtime.getRuntime().availableProcessors());
+            this.benchmarkTester = readProperty("jmh.benchmark.testClass", String.class, HttpsCallBenchmark.class.getSimpleName());
         }
 
         public int getForks() {
@@ -179,6 +199,14 @@ public class SysProps {
         public String getBenchmarkTester() {
             return benchmarkTester;
         }
+
+        public int getWarmupBatchSize() {
+            return warmupBatchSize;
+        }
+
+        public int getMeasurementBatchSize() {
+            return measurementBatchSize;
+        }
     }
 
     public static class SSLConfig {
@@ -190,6 +218,68 @@ public class SysProps {
 
         public boolean isPaypalJsseEnabled() {
             return paypalJsseEnabled;
+        }
+    }
+
+    public static class HttpClientLoadConfig extends ServerConfig {
+        private static final String WARMUP_COUNT_PROP = "client.warmup.count";
+        private static final String WARMUP_BUCKET_SIZE_PROP = "client.warmup.bucket.size";
+        private static final String WARMUP_DELAY_FOR_EACH_BUCKET_PROP = "client.warmup.bucket.delay.ms";
+        private static final String TOTAL_CALLS_PROP = "client.total.calls";
+        private static final String BUCKET_SIZE_PROP = "client.bucket.size";
+        private static final String DELAY_FOR_EACH_BUCKET_PROP = "client.bucket.delay.ms";
+
+        private static final Integer DEFAULT_WARMUP_COUNT = 2000;
+        private static final Integer DEFAULT_WARMUP_BUCKET_SIZE = 100;
+        private static final Integer DEFAULT_WARMUP_DELAY_FOR_EACH_BUCKET_MS = 100;
+        private static final Integer DEFAULT_TOTAL_CALLS = 60000;
+        private static final Integer DEFAULT_BUCKET_SIZE = 100;
+        private static final Integer DEFAULT_DELAY_FOR_EACH_BUCKET_MS = 100;
+
+        private final int warmupCount;
+
+        private final int totalNumberOfCalls;
+
+        private final int bucketCount;
+
+        private final int delayForEachBucketInMs;
+
+        private final int warmupBucketSize;
+
+        private final int warmupDelayForEachBucket;
+
+        public HttpClientLoadConfig() {
+            super();
+            this.warmupCount = readProperty(WARMUP_COUNT_PROP, Integer.class, DEFAULT_WARMUP_COUNT);
+            this.warmupBucketSize = readProperty(WARMUP_BUCKET_SIZE_PROP, Integer.class, DEFAULT_WARMUP_BUCKET_SIZE);
+            this.warmupDelayForEachBucket = readProperty(WARMUP_DELAY_FOR_EACH_BUCKET_PROP, Integer.class, DEFAULT_WARMUP_DELAY_FOR_EACH_BUCKET_MS);
+            this.totalNumberOfCalls = readProperty(TOTAL_CALLS_PROP, Integer.class, DEFAULT_TOTAL_CALLS);
+            this.bucketCount = readProperty(BUCKET_SIZE_PROP, Integer.class, DEFAULT_BUCKET_SIZE);
+            this.delayForEachBucketInMs = readProperty(DELAY_FOR_EACH_BUCKET_PROP, Integer.class, DEFAULT_DELAY_FOR_EACH_BUCKET_MS);
+        }
+
+        public int getWarmupCount() {
+            return warmupCount;
+        }
+
+        public int getTotalNumberOfCalls() {
+            return totalNumberOfCalls;
+        }
+
+        public int getBucketCount() {
+            return bucketCount;
+        }
+
+        public int getDelayForEachBucketInMs() {
+            return delayForEachBucketInMs;
+        }
+
+        public int getWarmupBucketSize() {
+            return warmupBucketSize;
+        }
+
+        public int getWarmupDelayForEachBucket() {
+            return warmupDelayForEachBucket;
         }
     }
 

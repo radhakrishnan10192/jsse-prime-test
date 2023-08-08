@@ -1,10 +1,8 @@
-package com.paypal.jsse.benchmark.sslr;
+package com.paypal.jsse.benchmark.client.sslr;
 
 import com.paypal.infra.ssl.PayPalSSLSession;
 import com.paypal.jsse.benchmark.client.HttpsClient;
-import com.paypal.jsse.benchmark.client.JmhHttpsClient;
-import com.paypal.jsse.benchmark.client.ReactorNettyHttpClient;
-import com.paypal.jsse.benchmark.client.ReactorNettyJmhHttpsClient;
+import com.paypal.jsse.benchmark.client.ReactorNettyHttpsClient;
 import com.paypal.jsse.benchmark.server.ReactorNettyHttpsServer;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -18,7 +16,6 @@ import reactor.netty.NettyPipeline;
 import reactor.netty.http.client.HttpClient;
 
 import javax.net.ssl.SSLSession;
-import java.math.BigDecimal;
 
 public class SslResumptionValidator {
 
@@ -30,7 +27,7 @@ public class SslResumptionValidator {
 
     public SslResumptionValidator() {
         new ReactorNettyHttpsServer();
-        final HttpsClient<HttpClient> reactorNettyClient = new ReactorNettyHttpClient();
+        final HttpsClient<HttpClient> reactorNettyClient = new ReactorNettyHttpsClient();
         final HttpClient httpsClient = reactorNettyClient.getClient();
 
         final String response = httpsClient
