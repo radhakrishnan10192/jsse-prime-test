@@ -2,15 +2,14 @@ package com.paypal.jsse.benchmark.client;
 
 import com.paypal.jsse.benchmark.client.metrics.MetricsRegistry;
 import com.paypal.jsse.benchmark.config.JsseTestSysProps;
-import com.paypal.jsse.test.ssl.SSLContextFactory;
-import com.paypal.jsse.test.ssl.KMSSLContextFactory;
+import com.paypal.jsse.benchmark.config.SslConfig;
 
 import javax.net.ssl.SSLContext;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.CompletionStage;
 
-public abstract class HttpsClient<C> {
+public abstract class HttpsClient<C> implements SslConfig  {
 
     protected final C client;
 
@@ -21,7 +20,7 @@ public abstract class HttpsClient<C> {
     public HttpsClient(final String host,
                        final int port,
                        final MetricsRegistry registry) {
-        this.client = createHttpsClient(host, port, createClientSslContext(), registry);
+        this.client = createHttpsClient(host, port,  createSslContext(true), registry);
     }
 
     public HttpsClient(final MetricsRegistry metricsRegistry) {
@@ -29,15 +28,10 @@ public abstract class HttpsClient<C> {
         final String host = serverConfig.getHost();
         final int port = serverConfig.getPort();
         if(metricsRegistry != null) {
-            this.client = createHttpsClient(host, port, createClientSslContext(), metricsRegistry);
+            this.client = createHttpsClient(host, port, createSslContext(true), metricsRegistry);
         } else {
-            this.client = createHttpsClient(host, port, createClientSslContext());
+            this.client = createHttpsClient(host, port, createSslContext(true));
         }
-    }
-
-    public SSLContext createClientSslContext() {
-        final SSLContextFactory sslContextFactory = new KMSSLContextFactory();
-        return sslContextFactory.sslContext(true);
     }
 
     abstract protected C createHttpsClient(final String host,
