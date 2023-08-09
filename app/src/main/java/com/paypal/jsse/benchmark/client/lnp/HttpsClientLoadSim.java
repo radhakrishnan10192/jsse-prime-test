@@ -1,13 +1,12 @@
 package com.paypal.jsse.benchmark.client.lnp;
 
-import com.paypal.jsse.benchmark.SysProps;
 import com.paypal.jsse.benchmark.client.HttpsClient;
+import com.paypal.jsse.benchmark.config.JsseTestSysProps;
 import com.paypal.jsse.benchmark.client.metrics.MetricsRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -24,7 +23,7 @@ public abstract class HttpsClientLoadSim<C> {
     private final HttpsClient<C> httpsClient;
     private final MetricsRegistry metricsRegistry;
 
-    private final SysProps.HttpClientLoadConfig httpClientLoadConfig;
+    private final JsseTestSysProps.HttpClientLoadConfig httpClientLoadConfig;
 
     private final CountDownLatch countDownLatch;
 
@@ -32,7 +31,7 @@ public abstract class HttpsClientLoadSim<C> {
         try {
             countDownLatch = new CountDownLatch(1);
             this.metricsRegistry = new MetricsRegistry();
-            httpClientLoadConfig = new SysProps.HttpClientLoadConfig();
+            httpClientLoadConfig = new JsseTestSysProps.HttpClientLoadConfig();
             httpsClient = createHttpsClient(httpClientLoadConfig.getHost(),
                     httpClientLoadConfig.getPort(),
                     metricsRegistry);

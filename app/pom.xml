@@ -18,16 +18,15 @@
         <jmh.version>1.28</jmh.version>
         <surefire.plugin.version>2.22.0</surefire.plugin.version>
         <logback.version>1.2.12</logback.version>
-        <security.interfaces.version>3.1.10</security.interfaces.version>
-        <paypal.security.version>2.4.0</paypal.security.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.paypal.jsse.test</groupId>
-            <artifactId>infra-jsse-cache-provider</artifactId>
+            <artifactId>commons</artifactId>
             <version>${project.version}</version>
         </dependency>
+
 
         <!-- third party dependencies -->
         <dependency>
@@ -49,6 +48,11 @@
             <groupId>io.projectreactor.netty</groupId>
             <artifactId>reactor-netty</artifactId>
             <version>1.0.34</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -100,6 +104,36 @@
                 <dependency>
                     <groupId>com.paypal.jsse.test</groupId>
                     <artifactId>infra-jsse-232</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>infra-jsse</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.paypal.jsse.test</groupId>
+                    <artifactId>km-ssl-context</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.paypal.security</groupId>
+                    <artifactId>infra-jsse-cache-provider</artifactId>
+                    <version>2.1.0</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>mock-jsse</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.paypal.jsse.test</groupId>
+                    <artifactId>infra-jsse-cache-provider</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.paypal.jsse.test</groupId>
+                    <artifactId>mock-ssl-context</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>

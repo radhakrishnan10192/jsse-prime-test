@@ -1,7 +1,5 @@
 package com.paypal.jsse.benchmark.client.metrics;
 
-import org.openjdk.jmh.annotations.TearDown;
-
 import java.util.LinkedList;
 import java.util.List;
 

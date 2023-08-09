@@ -21,8 +21,6 @@ import javax.net.ssl.SSLContext;
 import java.math.BigDecimal;
 import java.util.concurrent.CompletionStage;
 
-import static com.paypal.jsse.benchmark.SSLContextFactory.sslContext;
-
 public class ReactorNettyHttpsClient extends HttpsClient<HttpClient> {
     private static final Logger logger = LoggerFactory.getLogger(ReactorNettyHttpsClient.class);
 
@@ -40,20 +38,22 @@ public class ReactorNettyHttpsClient extends HttpsClient<HttpClient> {
 
     @Override
     public HttpClient createHttpsClient(final String host,
-                                        final int port) {
+                                        final int port,
+                                        final SSLContext sslContext) {
         return HttpClient.create(ConnectionProvider.newConnection())
                 .keepAlive(false)
-                .secure(SslProvider.builder().sslContext(nettySslContext(sslContext(true))).build())
+                .secure(SslProvider.builder().sslContext(nettySslContext(sslContext)).build())
                 .baseUrl(String.format("https://%s:%s", host, port));
     }
 
     @Override
     protected HttpClient createHttpsClient(final String host,
                                            final int port,
+                                           final SSLContext sslContext,
                                            final MetricsRegistry metricsRegistry) {
         final Metric.SSLMetric sslMetrics = new Metric.SSLMetric();
         metricsRegistry.addMetric(sslMetrics);
-        return createHttpsClient(host, port)
+        return createHttpsClient(host, port, sslContext)
                 .doOnChannelInit((observer, channel, address) -> {
                     final ChannelPipeline pipeline = channel.pipeline();
                     pipeline.addBefore(NettyPipeline.SslHandler,

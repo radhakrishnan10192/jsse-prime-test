@@ -1,4 +1,4 @@
-package com.paypal.jsse.benchmark;
+package com.paypal.jsse.test.ssl;
 
 import com.paypal.infra.ssl.PayPalProvider;
 import org.slf4j.Logger;
@@ -19,12 +19,13 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Objects;
 
-public class SSLContextFactory {
-    private static final Logger logger = LoggerFactory.getLogger(SSLContextFactory.class);
+public class MockSSLContextFactory implements SSLContextFactory {
 
-    private static void setupPaypalJSSEProvider() {
-        final boolean isPaypalJSSEEnabled = new SysProps.SSLConfig().isPaypalJsseEnabled();
-        if(isPaypalJSSEEnabled) {
+    private static final Logger logger = LoggerFactory.getLogger(MockSSLContextFactory.class);
+
+    private void setupPaypalJSSEProvider() {
+        final SSLConfig sslConfig = new SSLConfig();
+        if(sslConfig.isPaypalJsseEnabled()) {
             final Provider[] registeredProviders = Security.getProviders();
             if (registeredProviders != null) {
                 for (Provider provider : registeredProviders) {
@@ -41,14 +42,15 @@ public class SSLContextFactory {
         }
     }
 
-    public static SSLContext sslContext(final boolean forClient) {
+    @Override
+    public SSLContext sslContext(boolean forClient) {
         setupPaypalJSSEProvider();
         try {
             // Initialize KeyManagerFactory with the test keystore
             final KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             final KeyStore ks = KeyStore.getInstance("JCEKS");
             final String password = "123456789";
-            final String protectedFilePath = Objects.requireNonNull(SSLContextFactory.class.getClassLoader().getResource("protected")).getPath();
+            final String protectedFilePath = Objects.requireNonNull(SSLContextFactory.class.getClassLoader().getResource("mock-protected")).getPath();
             ks.load(Files.newInputStream(new File(protectedFilePath + "/azultest.jks").toPath()), password.toCharArray());
             keyManagerFactory.init(ks, password.toCharArray());
 

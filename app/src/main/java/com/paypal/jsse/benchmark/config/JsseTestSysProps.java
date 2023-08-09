@@ -1,4 +1,4 @@
-package com.paypal.jsse.benchmark;
+package com.paypal.jsse.benchmark.config;
 
 import com.paypal.jsse.benchmark.client.HttpsClient;
 import com.paypal.jsse.benchmark.client.ReactorNettyHttpsClient;
@@ -14,7 +14,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class SysProps {
+import static com.paypal.jsse.test.config.SysPropsReader.readProperty;
+
+public class JsseTestSysProps {
 
     public static class ServerConfig {
         String DEFAULT_SERVER_HOST = "127.0.0.1";
@@ -209,17 +211,6 @@ public class SysProps {
         }
     }
 
-    public static class SSLConfig {
-        private final boolean paypalJsseEnabled;
-
-        public SSLConfig() {
-            paypalJsseEnabled = readProperty("paypal.jsse.enable", Boolean.class, true);
-        }
-
-        public boolean isPaypalJsseEnabled() {
-            return paypalJsseEnabled;
-        }
-    }
 
     public static class HttpClientLoadConfig extends ServerConfig {
         private static final String WARMUP_COUNT_PROP = "client.warmup.count";
@@ -281,27 +272,5 @@ public class SysProps {
         public int getWarmupDelayForEachBucket() {
             return warmupDelayForEachBucket;
         }
-    }
-
-    private static <T> T readProperty(final String propertyName,
-                                     final Class<T> targetType,
-                                     final T defaultValue) {
-        final String propertyValue = System.getProperty(propertyName, String.valueOf(defaultValue));
-        return convertToSpecificType(propertyValue, targetType);
-    }
-
-    @SuppressWarnings("unchecked")
-    static <T> T convertToSpecificType(final String propertyValue,
-                                       final Class<T> targetType) {
-        if (targetType == null || targetType.equals(String.class)) {
-            return (T) propertyValue;
-        } else if (targetType.equals(Boolean.class)) {
-            return (T) Boolean.valueOf(propertyValue);
-        } else if (targetType.equals(Integer.class)) {
-            return (T) Integer.valueOf(propertyValue);
-        } else if (targetType.equals(Double.class)) {
-            return (T) Double.valueOf(propertyValue);
-        }
-        throw new RuntimeException("Unsupported target type: " + targetType);
     }
 }

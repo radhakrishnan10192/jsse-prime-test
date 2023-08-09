@@ -12,6 +12,9 @@
         <module>app</module>
         <module>libs/infra-jsse-cache-provider</module>
         <module>libs/infra-jsse-232</module>
+        <module>mock-ssl-context</module>
+        <module>commons</module>
+        <module>km-ssl-context</module>
     </modules>
 
     <properties>

@@ -1,18 +1,16 @@
 package com.paypal.jsse.benchmark.client;
 
-import com.paypal.jsse.benchmark.SysProps;
 import com.paypal.jsse.benchmark.client.metrics.MetricsRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import reactor.util.Metrics;
+import com.paypal.jsse.benchmark.config.JsseTestSysProps;
+import com.paypal.jsse.test.ssl.SSLContextFactory;
+import com.paypal.jsse.test.ssl.KMSSLContextFactory;
 
+import javax.net.ssl.SSLContext;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.CompletionStage;
 
 public abstract class HttpsClient<C> {
-
-    private static final Logger logger = LoggerFactory.getLogger(HttpsClient.class);
 
     protected final C client;
 
@@ -23,23 +21,33 @@ public abstract class HttpsClient<C> {
     public HttpsClient(final String host,
                        final int port,
                        final MetricsRegistry registry) {
-        this.client = createHttpsClient(host, port, registry);
+        this.client = createHttpsClient(host, port, createClientSslContext(), registry);
     }
 
     public HttpsClient(final MetricsRegistry metricsRegistry) {
-        final SysProps.ServerConfig serverConfig = new SysProps.ServerConfig();
+        final JsseTestSysProps.ServerConfig serverConfig = new JsseTestSysProps.ServerConfig();
         final String host = serverConfig.getHost();
         final int port = serverConfig.getPort();
         if(metricsRegistry != null) {
-            this.client = createHttpsClient(host, port, metricsRegistry);
+            this.client = createHttpsClient(host, port, createClientSslContext(), metricsRegistry);
         } else {
-            this.client = createHttpsClient(host, port);
+            this.client = createHttpsClient(host, port, createClientSslContext());
         }
     }
 
-    abstract protected C createHttpsClient(final String host, final int port, final MetricsRegistry metricsRegistry);
+    public SSLContext createClientSslContext() {
+        final SSLContextFactory sslContextFactory = new KMSSLContextFactory();
+        return sslContextFactory.sslContext(true);
+    }
 
-    abstract C createHttpsClient(final String host, final int port);
+    abstract protected C createHttpsClient(final String host,
+                                           final int port,
+                                           final SSLContext sslContext,
+                                           final MetricsRegistry metricsRegistry);
+
+    abstract C createHttpsClient(final String host,
+                                 final int port,
+                                 final SSLContext sslContext);
 
     public String executeHttpsCall() {
         return this.executeHttpsCall("/hi");

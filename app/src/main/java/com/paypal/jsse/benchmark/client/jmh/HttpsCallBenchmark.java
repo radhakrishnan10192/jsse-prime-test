@@ -1,6 +1,6 @@
 package com.paypal.jsse.benchmark.client.jmh;
 
-import com.paypal.jsse.benchmark.SysProps;
+import com.paypal.jsse.benchmark.config.JsseTestSysProps;
 import com.paypal.jsse.benchmark.client.HttpsClient;
 import com.paypal.jsse.benchmark.client.metrics.JMHMetricsRegistry;
 import com.paypal.jsse.benchmark.server.HttpsServer;
@@ -21,10 +21,10 @@ public class HttpsCallBenchmark {
 
     @Setup
     public void setup(final JMHMetricsRegistry metricsRegistry) {
-        final boolean isStartEmbeddedServer = new SysProps.HttpCallBenchmarkConfig().isStartEmbeddedServer();
+        final boolean isStartEmbeddedServer = new JsseTestSysProps.HttpCallBenchmarkConfig().isStartEmbeddedServer();
         if(isStartEmbeddedServer) {
-            final String serverType = SysProps.ServerType.serverTypePropVal();
-            final Optional<SysProps.ServerType> svrTypeOpt = SysProps.ServerType.getServerType(serverType);
+            final String serverType = JsseTestSysProps.ServerType.serverTypePropVal();
+            final Optional<JsseTestSysProps.ServerType> svrTypeOpt = JsseTestSysProps.ServerType.getServerType(serverType);
             server = svrTypeOpt
                     .map(svrType -> svrType.getServer().get())
                     .orElseThrow(() -> new RuntimeException("Invalid ServerType : " + serverType));
@@ -33,8 +33,8 @@ public class HttpsCallBenchmark {
         }
 
         this.metricsRegistry = metricsRegistry;
-        final String clientType = SysProps.ClientType.clientTypePropVal();
-        final Optional<SysProps.ClientType> clientTypeOpt = SysProps.ClientType.getClientType(clientType);
+        final String clientType = JsseTestSysProps.ClientType.clientTypePropVal();
+        final Optional<JsseTestSysProps.ClientType> clientTypeOpt = JsseTestSysProps.ClientType.getClientType(clientType);
         client = clientTypeOpt
                 .map(clType -> clType.getClient().apply(metricsRegistry))
                 .orElseThrow(() -> new RuntimeException("Invalid client type : " + clientType));

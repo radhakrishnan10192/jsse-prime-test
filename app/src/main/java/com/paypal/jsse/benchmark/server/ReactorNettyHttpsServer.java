@@ -14,19 +14,18 @@ import reactor.netty.tcp.SslProvider;
 import javax.net.ssl.SSLContext;
 import java.time.Duration;
 
-import static com.paypal.jsse.benchmark.SSLContextFactory.sslContext;
-
 public class ReactorNettyHttpsServer extends HttpsServer<DisposableServer> {
 
     private static final Logger logger = LoggerFactory.getLogger(ReactorNettyHttpsServer.class);
 
     @Override
     public DisposableServer createServer(final String host,
-                                         final int port) {
+                                         final int port,
+                                         final SSLContext sslContext) {
         final DisposableServer disposableServer = HttpServer
                 .create()
                 .port(port)
-                .secure(SslProvider.builder().sslContext(nettySslContext(sslContext(false))).build())
+                .secure(SslProvider.builder().sslContext(nettySslContext(sslContext)).build())
                 .route(routes -> routes
                         .get("/hi",
                                 (req, res) -> res.sendString(Mono.just("Hello world").delayElement(Duration.ofMillis(100)))))

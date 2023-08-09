@@ -1,6 +1,6 @@
 package com.paypal.jsse.benchmark.client.jmh;
 
-import com.paypal.jsse.benchmark.SysProps;
+import com.paypal.jsse.benchmark.config.JsseTestSysProps;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.profile.GCProfiler;
 import org.openjdk.jmh.profile.JavaFlightRecorderProfiler;
@@ -21,7 +21,7 @@ public class JmhExecutor {
     private static final Logger logger = LoggerFactory.getLogger(JmhExecutor.class);
 
     public JmhExecutor()  {
-        final SysProps.JMHConfig jmhConfig = new SysProps.JMHConfig();
+        final JsseTestSysProps.JMHConfig jmhConfig = new JsseTestSysProps.JMHConfig();
         try {
             final ChainedOptionsBuilder optionsBuilder = new OptionsBuilder()
                     .include(jmhConfig.getBenchmarkTester())

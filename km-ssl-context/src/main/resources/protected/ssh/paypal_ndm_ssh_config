@@ -1,0 +1,87 @@
+# PayPal Protected Package Default Template for ssh_config(5)
+#
+# This files is openssh version sensitive. Inital version was first written for 
+# OpenSSH_5.1p1 with all its newer options and more secure cipher choices, but 
+# in order to suppprt OpenSSH_3.5p1kb0 currently in play/stage/sandbox/live.  I 
+# commment out OpenSSH_5.1p1 features and reducted the Ciphers OpenSSH_3.5p1kb0
+# standards to get a lowest common denominator - emcgough 20091009
+#  
+#  20091009 emcgough - owner 
+#  20091016 spowar - created
+#  20091016 spowar - ciphers preference change after InfoSec Standards meeting
+#                      consider performance and aes256 flaws 
+#
+
+# Host 
+#AddressFamily any
+BatchMode no
+# BindAddress
+ChallengeResponseAuthentication yes
+CheckHostIP yes
+Cipher 3des
+
+#-------------------------------------------------------------------------------------
+# OpenSSH_5.1p1    : aes128-ctr,aes192-ctr,aes256-ctr,arcfour128,arcfour256,3des-cbc
+# OpenSSH_3.5p1kb0 : aes128-cbc,aes192-cbc,aes256-cbc,3des-cbc
+#-------------------------------------------------------------------------------------
+Ciphers aes128-cbc,aes192-cbc,aes256-cbc,3des-cbc
+
+ClearAllForwardings no
+Compression no
+CompressionLevel 6
+ConnectionAttempts 1
+#ConnectTimeout
+#ControlMaster no
+#ControlPath none
+#DynamicForward
+#EnableSSHKeysign no
+#EscapeChar
+#ExitOnForwardFailure no
+ForwardAgent no
+ForwardX11 no
+#ForwardX11Trusted no
+GatewayPorts no
+GlobalKnownHostsFile /bin/false
+#GSSAPIAuthentication no
+#GSSAPIDelegateCredentials no
+#HashKnownHosts no
+HostbasedAuthentication no
+HostKeyAlgorithms ssh-rsa,ssh-dss
+#HostKeyAlias
+#HostName
+#IdentitiesOnly yes
+#IdentityFile  /bin/false
+KbdInteractiveAuthentication yes
+#KbdInteractiveDevices
+#LocalCommand
+#LocalForward
+LogLevel INFO
+MACs hmac-sha1,hmac-sha1-96
+NoHostAuthenticationForLocalhost no
+NumberOfPasswordPrompts 1
+PasswordAuthentication yes
+#PermitLocalCommand no
+Port 22
+PreferredAuthentications publickey,keyboard-interactive,password
+Protocol 2
+#ProxyCommand
+PubkeyAuthentication yes
+#RekeyLimit
+#RemoteForward
+RhostsRSAAuthentication no
+RSAAuthentication yes
+#SendEnv
+#ServerAliveCountMax 3
+#ServerAliveInterval 0
+#SmartcardDevice
+StrictHostKeyChecking yes
+#TCPKeepAlive yes
+#Tunnel no
+#TunnelDevice
+UsePrivilegedPort no
+#User 
+UserKnownHostsFile /bin/false
+#VerifyHostKeyDNS no
+#VisualHostKey no
+#XAuthLocation
+
