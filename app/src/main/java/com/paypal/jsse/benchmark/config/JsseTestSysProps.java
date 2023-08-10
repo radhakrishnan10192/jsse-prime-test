@@ -18,6 +18,7 @@ import static com.paypal.jsse.test.config.SysPropsReader.readProperty;
 public class JsseTestSysProps {
 
     public static class ServerConfig {
+
         String DEFAULT_SERVER_HOST = "127.0.0.1";
         int DEFAULT_SERVER_PORT = 6443;
         String SERVER_HOST_PROP = "test.server.host";

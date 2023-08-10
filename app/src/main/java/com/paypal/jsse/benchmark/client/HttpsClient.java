@@ -8,7 +8,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.concurrent.CompletionStage;
 
 public abstract class HttpsClient<C> implements SslConfig  {
 
@@ -20,23 +19,24 @@ public abstract class HttpsClient<C> implements SslConfig  {
         this(null);
     }
 
-    public HttpsClient(final String host,
-                       final int port,
-                       final MetricsRegistry registry) {
-        this.client = createHttpsClient(host, port,  createSslContext(true), registry);
-        this.baseUrl = createBaseUrl(host, port);
+    public HttpsClient(final MetricsRegistry metricsRegistry) {
+        this(new JsseTestSysProps.ServerConfig(), metricsRegistry);
     }
 
-    public HttpsClient(final MetricsRegistry metricsRegistry) {
-        final JsseTestSysProps.ServerConfig serverConfig = new JsseTestSysProps.ServerConfig();
-        final String host = serverConfig.getHost();
-        final int port = serverConfig.getPort();
+    public HttpsClient(final JsseTestSysProps.ServerConfig serverConfig, final MetricsRegistry metricsRegistry) {
+        this(serverConfig.getHost(), serverConfig.getPort(), metricsRegistry);
+    }
+
+    public HttpsClient(final String host,
+                       final int port,
+                       final MetricsRegistry metricsRegistry) {
         if(metricsRegistry != null) {
             this.client = createHttpsClient(host, port, createSslContext(true), metricsRegistry);
         } else {
             this.client = createHttpsClient(host, port, createSslContext(true));
         }
         this.baseUrl = createBaseUrl(host, port);
+        logger.info("{} HTTPS client initialized...", clientName());
     }
 
     private String createBaseUrl(final String host, final int port) {
@@ -57,6 +57,8 @@ public abstract class HttpsClient<C> implements SslConfig  {
     }
 
     public abstract String executeHttpsCall(final String path);
+
+    abstract String clientName();
 
     public C getClient() {
         return client;

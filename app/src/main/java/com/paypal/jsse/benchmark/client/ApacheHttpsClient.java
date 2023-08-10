@@ -63,6 +63,11 @@ public class ApacheHttpsClient extends HttpsClient<CloseableHttpClient> {
         }
     }
 
+    @Override
+    String clientName() {
+        return "Apache";
+    }
+
     public static class CustomSSLSocketFactory extends SSLConnectionSocketFactory {
 
         private final Metric.SSLMetric sslMetrics;

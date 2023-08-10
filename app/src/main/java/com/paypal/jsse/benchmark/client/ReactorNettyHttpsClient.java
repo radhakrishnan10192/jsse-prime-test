@@ -75,6 +75,11 @@ public class ReactorNettyHttpsClient extends HttpsClient<HttpClient> {
         return response;
     }
 
+    @Override
+    String clientName() {
+        return "Reactor Netty";
+    }
+
     private static class SslHandshakeTimeRecorder extends ChannelInboundHandlerAdapter {
 
         private final Metric.SSLMetric sslMetrics;
