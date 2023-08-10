@@ -2,9 +2,9 @@ package com.paypal.jsse.benchmark;
 
 
 import com.paypal.jsse.benchmark.client.jmh.JmhExecutor;
-import com.paypal.jsse.benchmark.client.lnp.HttpsClientLoadExecutor;
-import com.paypal.jsse.benchmark.server.ReactorNettyStandaloneServer;
+import com.paypal.jsse.benchmark.client.lnp.HttpsCallLoadExecutor;
 import com.paypal.jsse.benchmark.client.sslr.SslResumptionValidator;
+import com.paypal.jsse.benchmark.server.ReactorNettyStandaloneServer;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -28,7 +28,7 @@ public class JsseTestApp {
     public enum TestMode {
         JMH_CLIENT_CALLS("jmh-client-calls", JmhExecutor::new),
         START_SERVER("start-server", ReactorNettyStandaloneServer::new),
-        CLIENT_LNP("client-lnp", HttpsClientLoadExecutor::new),
+        CLIENT_LNP("client-lnp", HttpsCallLoadExecutor::new),
         SSLR("sslr", SslResumptionValidator::new);
 
         private final String testMode;

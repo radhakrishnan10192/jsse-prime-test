@@ -1,10 +1,9 @@
 package com.paypal.jsse.benchmark.config;
 
+import com.paypal.jsse.benchmark.client.ApacheHttpsClient;
 import com.paypal.jsse.benchmark.client.HttpsClient;
 import com.paypal.jsse.benchmark.client.ReactorNettyHttpsClient;
 import com.paypal.jsse.benchmark.client.jmh.HttpsCallBenchmark;
-import com.paypal.jsse.benchmark.client.lnp.HttpsClientLoadSim;
-import com.paypal.jsse.benchmark.client.lnp.ReactorNettyHttpsClientLoadSim;
 import com.paypal.jsse.benchmark.client.metrics.MetricsRegistry;
 import com.paypal.jsse.benchmark.server.HttpsServer;
 import com.paypal.jsse.benchmark.server.ReactorNettyHttpsServer;
@@ -77,24 +76,23 @@ public class JsseTestSysProps {
 
     public enum ClientType {
         REACTOR_NETTY_CLIENT(
-                "RN-CLIENT",
-                ReactorNettyHttpsClient::new,
-                ReactorNettyHttpsClientLoadSim::new
+                "REACTOR_NETTY",
+                ReactorNettyHttpsClient::new
+        ),
+        APACHE_HTTP_CLIENT(
+                "APACHE",
+                ApacheHttpsClient::new
         );
 
         private final String shortName;
         private final Function<MetricsRegistry, HttpsClient<?>> client;
 
-        private final Supplier<HttpsClientLoadSim<?>> loadSim;
-
         private static final String CLIENT_TYPE_PARAM = "client.type";
 
         ClientType(final String shortName,
-                   final Function<MetricsRegistry, HttpsClient<?>> client,
-                   final Supplier<HttpsClientLoadSim<?>> loadSim) {
+                   final Function<MetricsRegistry, HttpsClient<?>> client) {
             this.shortName = shortName;
             this.client = client;
-            this.loadSim = loadSim;
         }
 
         public String getShortName() {
@@ -105,12 +103,8 @@ public class JsseTestSysProps {
             return client;
         }
 
-        public Supplier<HttpsClientLoadSim<?>> getLoadSim() {
-            return loadSim;
-        }
-
         public static String clientTypePropVal() {
-            return readProperty(CLIENT_TYPE_PARAM, String.class, REACTOR_NETTY_CLIENT.shortName);
+            return readProperty(CLIENT_TYPE_PARAM, String.class, APACHE_HTTP_CLIENT.shortName);
         }
 
         public static Optional<ClientType> getClientType(final String shortName) {
@@ -271,6 +265,28 @@ public class JsseTestSysProps {
 
         public int getWarmupDelayForEachBucket() {
             return warmupDelayForEachBucket;
+        }
+    }
+
+    public static class LoadSimulatorConfig {
+
+        private static final String NO_OF_CONCURRENT_USERS = "concurrent.users";
+        private static final String EXECUTION_TIME_IN_SECS = "execution.time.secs";
+
+        private final int numberOfConcurrentUsers;
+        private final int executionTimeInSecs;
+
+        public LoadSimulatorConfig() {
+            this.numberOfConcurrentUsers = readProperty(NO_OF_CONCURRENT_USERS, Integer.class, 2);
+            this.executionTimeInSecs = readProperty(EXECUTION_TIME_IN_SECS, Integer.class, 60);
+        }
+
+        public int getNumberOfConcurrentUsers() {
+            return numberOfConcurrentUsers;
+        }
+
+        public int getExecutionTimeInSecs() {
+            return executionTimeInSecs;
         }
     }
 }

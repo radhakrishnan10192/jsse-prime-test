@@ -5,6 +5,7 @@ import com.paypal.jsse.benchmark.config.JsseTestSysProps;
 import com.paypal.jsse.benchmark.config.SslConfig;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.CompletionStage;
@@ -12,6 +13,8 @@ import java.util.concurrent.CompletionStage;
 public abstract class HttpsClient<C> implements SslConfig  {
 
     protected final C client;
+
+    protected final String baseUrl;
 
     public HttpsClient() {
         this(null);
@@ -21,6 +24,7 @@ public abstract class HttpsClient<C> implements SslConfig  {
                        final int port,
                        final MetricsRegistry registry) {
         this.client = createHttpsClient(host, port,  createSslContext(true), registry);
+        this.baseUrl = createBaseUrl(host, port);
     }
 
     public HttpsClient(final MetricsRegistry metricsRegistry) {
@@ -32,6 +36,11 @@ public abstract class HttpsClient<C> implements SslConfig  {
         } else {
             this.client = createHttpsClient(host, port, createSslContext(true));
         }
+        this.baseUrl = createBaseUrl(host, port);
+    }
+
+    private String createBaseUrl(final String host, final int port) {
+        return String.format("https://%s:%s", host, port);
     }
 
     abstract protected C createHttpsClient(final String host,
@@ -39,21 +48,15 @@ public abstract class HttpsClient<C> implements SslConfig  {
                                            final SSLContext sslContext,
                                            final MetricsRegistry metricsRegistry);
 
-    abstract C createHttpsClient(final String host,
-                                 final int port,
-                                 final SSLContext sslContext);
+    protected abstract C createHttpsClient(final String host,
+                                           final int port,
+                                           final SSLContext sslContext);
 
     public String executeHttpsCall() {
         return this.executeHttpsCall("/hi");
     }
 
-    public CompletionStage<String> executeHttpsCallAsync() {
-        return this.executeHttpsCallAsync("/hi");
-    }
-
     public abstract String executeHttpsCall(final String path);
-
-    public abstract CompletionStage<String> executeHttpsCallAsync(final String path);
 
     public C getClient() {
         return client;
@@ -62,6 +65,14 @@ public abstract class HttpsClient<C> implements SslConfig  {
     protected static BigDecimal elapsedTime(final long startTimeNS) {
         final double elapsedTime = (System.nanoTime() - startTimeNS) / 1.0e06;
         return BigDecimal.valueOf(elapsedTime).setScale(3, RoundingMode.FLOOR);
+    }
+
+    protected static void logSessionInfo(final boolean isResumed,
+                                final SSLSession sslSession) {
+        logger.info("\n\nSession Resumed: {}, Cipher suite: {}, Protocol: {}\n\n",
+                isResumed,
+                sslSession.getCipherSuite(),
+                sslSession.getProtocol());
     }
 
 }

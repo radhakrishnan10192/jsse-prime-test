@@ -1,13 +1,14 @@
 package com.paypal.jsse.benchmark.client.lnp;
 
+import com.paypal.jsse.benchmark.client.HttpsClient;
+import com.paypal.jsse.benchmark.client.metrics.MetricsRegistry;
 import com.paypal.jsse.benchmark.config.JsseTestSysProps;
 import com.paypal.jsse.benchmark.server.HttpsServer;
 
 import java.util.Optional;
 
-public class HttpsClientLoadExecutor {
-
-    public HttpsClientLoadExecutor() {
+public class HttpsCallLoadExecutor {
+    public HttpsCallLoadExecutor() {
         final boolean isStartEmbeddedServer = new JsseTestSysProps.HttpCallBenchmarkConfig().isStartEmbeddedServer();
         HttpsServer<?> server = null;
         if(isStartEmbeddedServer) {
@@ -18,19 +19,22 @@ public class HttpsClientLoadExecutor {
                     .orElseThrow(() -> new RuntimeException("Invalid ServerType : " + serverType));
         }
         try {
+            final MetricsRegistry metricsRegistry = new MetricsRegistry();
+
             final String clientType = JsseTestSysProps.ClientType.clientTypePropVal();
             final Optional<JsseTestSysProps.ClientType> clientTypeOpt = JsseTestSysProps.ClientType.getClientType(clientType);
-            final HttpsClientLoadSim<?> loadSim = clientTypeOpt
-                    .map(clType -> clType.getLoadSim().get())
+
+            final HttpsClient<?> httpsClient = clientTypeOpt.
+                    map(clType -> clType.getClient().apply(metricsRegistry))
                     .orElseThrow(() -> new RuntimeException("Invalid client type : " + clientType));
-            loadSim.executeClientLoadTest();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+
+            final LoadSimulator loadSimulator = () -> httpsClient::executeHttpsCall;
+            loadSimulator.execute();
+            metricsRegistry.report();
         } finally {
             if(server != null) {
                 server.stopServer();
             }
         }
     }
-
 }

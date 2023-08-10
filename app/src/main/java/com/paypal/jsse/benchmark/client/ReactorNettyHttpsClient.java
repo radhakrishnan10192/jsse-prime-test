@@ -19,7 +19,6 @@ import reactor.netty.tcp.SslProvider;
 
 import javax.net.ssl.SSLContext;
 import java.math.BigDecimal;
-import java.util.concurrent.CompletionStage;
 
 public class ReactorNettyHttpsClient extends HttpsClient<HttpClient> {
     private static final Logger logger = LoggerFactory.getLogger(ReactorNettyHttpsClient.class);
@@ -74,17 +73,6 @@ public class ReactorNettyHttpsClient extends HttpsClient<HttpClient> {
             logger.debug("Response: " + response);
         }
         return response;
-    }
-
-    @Override
-    public CompletionStage<String> executeHttpsCallAsync(String path) {
-        return client
-                .get()
-                .uri(path)
-                .responseSingle((resp, bytes) -> bytes.asString())
-                .doOnError(throwable -> logger.debug(throwable.getMessage(), throwable))
-                .onErrorReturn("failed")
-                .toFuture();
     }
 
     private static class SslHandshakeTimeRecorder extends ChannelInboundHandlerAdapter {

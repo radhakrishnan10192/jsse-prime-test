@@ -45,6 +45,7 @@ public interface Metric {
                 logger.info("95th percentile: {}", statistics.getPercentile(95));
                 logger.info("99th percentile: {}", statistics.getPercentile(99));
                 logger.info("Average time: {}", statistics.getMean());
+                logger.info("Total number of handshakes: {}", statistics.getN());
             }
         }
     }
