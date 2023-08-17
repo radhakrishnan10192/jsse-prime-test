@@ -16,19 +16,19 @@
         </layout>
     </appender>
 
-    <logger name="com.paypal.jsse.benchmark.client.JmhHttpsClient" level="info" additivity="false">
+    <logger name="com.paypal.jsse.tester.client.JmhHttpsClient" level="info" additivity="false">
         <appender-ref ref="CONSOLE-MIN"/>
     </logger>
 
-    <logger name="com.paypal.jsse.benchmark.client.lnp.HttpsClientLoadSim" level="info" additivity="false">
+    <logger name="com.paypal.jsse.tester.client.lnp.HttpsClientLoadSim" level="info" additivity="false">
         <appender-ref ref="CONSOLE-MIN"/>
     </logger>
 
-    <logger name="com.paypal.jsse.benchmark.client.metrics.Metric" level="info" additivity="false">
+    <logger name="com.paypal.jsse.tester.client.metrics.Metric" level="info" additivity="false">
         <appender-ref ref="CONSOLE-MIN"/>
     </logger>
 
-    <logger name="com.paypal.jsse.benchmark.client.lnp.LoadSimulator" level="info" additivity="false">
+    <logger name="com.paypal.jsse.tester.tests.lnp.LoadSimulator" level="info" additivity="false">
         <appender-ref ref="CONSOLE-MIN"/>
     </logger>
 

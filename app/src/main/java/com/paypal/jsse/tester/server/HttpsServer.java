@@ -1,7 +1,7 @@
-package com.paypal.jsse.benchmark.server;
+package com.paypal.jsse.tester.server;
 
-import com.paypal.jsse.benchmark.config.JsseTestSysProps;
-import com.paypal.jsse.benchmark.config.SslConfig;
+import com.paypal.jsse.tester.config.JsseTestSysProps;
+import com.paypal.jsse.tester.config.SslConfig;
 
 import javax.net.ssl.SSLContext;
 

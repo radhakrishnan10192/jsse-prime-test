@@ -1,6 +1,6 @@
-package com.paypal.jsse.benchmark.client.jmh;
+package com.paypal.jsse.tester.tests.jmh;
 
-import com.paypal.jsse.benchmark.config.JsseTestSysProps;
+import com.paypal.jsse.tester.config.JsseTestSysProps;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.profile.GCProfiler;
 import org.openjdk.jmh.profile.JavaFlightRecorderProfiler;

@@ -1,4 +1,4 @@
-package com.paypal.jsse.benchmark.client.metrics;
+package com.paypal.jsse.tester.client.metrics;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;

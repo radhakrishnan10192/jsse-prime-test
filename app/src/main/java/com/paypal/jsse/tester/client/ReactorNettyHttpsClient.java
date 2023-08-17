@@ -1,7 +1,7 @@
-package com.paypal.jsse.benchmark.client;
+package com.paypal.jsse.tester.client;
 
-import com.paypal.jsse.benchmark.client.metrics.Metric;
-import com.paypal.jsse.benchmark.client.metrics.MetricsRegistry;
+import com.paypal.jsse.tester.client.metrics.Metric;
+import com.paypal.jsse.tester.client.metrics.MetricsRegistry;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -29,10 +29,6 @@ public class ReactorNettyHttpsClient extends HttpsClient<HttpClient> {
 
     public ReactorNettyHttpsClient(MetricsRegistry metricsRegistry) {
         super(metricsRegistry);
-    }
-
-    public ReactorNettyHttpsClient(String host, int port, MetricsRegistry registry) {
-        super(host, port, registry);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.paypal.jsse.benchmark.server;
+package com.paypal.jsse.tester.server;
 
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.IdentityCipherSuiteFilter;

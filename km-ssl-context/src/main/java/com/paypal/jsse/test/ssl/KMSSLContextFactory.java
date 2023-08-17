@@ -31,6 +31,7 @@ public class KMSSLContextFactory implements SSLContextFactory {
     @Override
     public SSLContext sslContext(boolean forClient) {
         setupPaypalJSSEProvider();
+        logger.info("KM SSL Context created for {}", forClient ? "Client" : "Server");
         return sslContextProvider.getInternalSSLContext();
     }
 }

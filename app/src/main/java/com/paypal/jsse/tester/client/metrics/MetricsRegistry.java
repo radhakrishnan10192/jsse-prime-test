@@ -1,4 +1,4 @@
-package com.paypal.jsse.benchmark.client.metrics;
+package com.paypal.jsse.tester.client.metrics;
 
 import java.util.LinkedList;
 import java.util.List;

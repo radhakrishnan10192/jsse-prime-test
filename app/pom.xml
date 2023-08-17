@@ -88,7 +88,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.7.14</version>
                 <configuration>
-                    <mainClass>com.paypal.jsse.benchmark.JsseTestApp</mainClass>
+                    <mainClass>com.paypal.jsse.tester.JsseTestApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>

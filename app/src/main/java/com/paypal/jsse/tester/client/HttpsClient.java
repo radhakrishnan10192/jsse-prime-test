@@ -1,8 +1,8 @@
-package com.paypal.jsse.benchmark.client;
+package com.paypal.jsse.tester.client;
 
-import com.paypal.jsse.benchmark.client.metrics.MetricsRegistry;
-import com.paypal.jsse.benchmark.config.JsseTestSysProps;
-import com.paypal.jsse.benchmark.config.SslConfig;
+import com.paypal.jsse.tester.client.metrics.MetricsRegistry;
+import com.paypal.jsse.tester.config.JsseTestSysProps;
+import com.paypal.jsse.tester.config.SslConfig;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
@@ -23,7 +23,8 @@ public abstract class HttpsClient<C> implements SslConfig  {
         this(new JsseTestSysProps.ServerConfig(), metricsRegistry);
     }
 
-    public HttpsClient(final JsseTestSysProps.ServerConfig serverConfig, final MetricsRegistry metricsRegistry) {
+    public HttpsClient(final JsseTestSysProps.ServerConfig serverConfig,
+                       final MetricsRegistry metricsRegistry) {
         this(serverConfig.getHost(), serverConfig.getPort(), metricsRegistry);
     }
 
@@ -39,7 +40,8 @@ public abstract class HttpsClient<C> implements SslConfig  {
         logger.info("{} HTTPS client initialized...", clientName());
     }
 
-    private String createBaseUrl(final String host, final int port) {
+    private String createBaseUrl(final String host,
+                                 final int port) {
         return String.format("https://%s:%s", host, port);
     }
 

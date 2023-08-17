@@ -1,10 +1,10 @@
-package com.paypal.jsse.benchmark;
+package com.paypal.jsse.tester;
 
 
-import com.paypal.jsse.benchmark.client.jmh.JmhExecutor;
-import com.paypal.jsse.benchmark.client.lnp.HttpsCallLoadExecutor;
-import com.paypal.jsse.benchmark.client.sslr.SslResumptionValidator;
-import com.paypal.jsse.benchmark.server.ReactorNettyStandaloneServer;
+import com.paypal.jsse.tester.tests.jmh.JmhExecutor;
+import com.paypal.jsse.tester.tests.lnp.HttpsCallLoadExecutor;
+import com.paypal.jsse.tester.tests.sslr.SslResumptionValidator;
+import com.paypal.jsse.tester.server.ReactorNettyStandaloneServer;
 
 import java.util.Arrays;
 import java.util.Optional;

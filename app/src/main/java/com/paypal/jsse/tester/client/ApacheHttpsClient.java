@@ -1,13 +1,13 @@
-package com.paypal.jsse.benchmark.client;
+package com.paypal.jsse.tester.client;
 
 import com.paypal.infra.ssl.PayPalSSLSession;
-import com.paypal.jsse.benchmark.client.metrics.Metric;
-import com.paypal.jsse.benchmark.client.metrics.MetricsRegistry;
+import com.paypal.jsse.tester.client.metrics.Metric;
+import com.paypal.jsse.tester.client.metrics.MetricsRegistry;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
@@ -17,13 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.security.cert.X509Certificate;
 import java.util.concurrent.Callable;
 
 public class ApacheHttpsClient extends HttpsClient<CloseableHttpClient> {
@@ -35,7 +33,10 @@ public class ApacheHttpsClient extends HttpsClient<CloseableHttpClient> {
     }
 
     @Override
-    public CloseableHttpClient createHttpsClient(String host, int port, SSLContext sslContext, MetricsRegistry metricsRegistry) {
+    public CloseableHttpClient createHttpsClient(String host,
+                                                 int port,
+                                                 SSLContext sslContext,
+                                                 MetricsRegistry metricsRegistry) {
         final Metric.SSLMetric sslMetrics = new Metric.SSLMetric();
         metricsRegistry.addMetric(sslMetrics);
         return HttpClients.custom()
@@ -44,7 +45,9 @@ public class ApacheHttpsClient extends HttpsClient<CloseableHttpClient> {
     }
 
     @Override
-    protected CloseableHttpClient createHttpsClient(String host, int port, SSLContext sslContext) {
+    protected CloseableHttpClient createHttpsClient(String host,
+                                                    int port,
+                                                    SSLContext sslContext) {
         return HttpClients.custom()
                 .setSSLSocketFactory(new CustomSSLSocketFactory(sslContext))
                 .build();
@@ -78,7 +81,7 @@ public class ApacheHttpsClient extends HttpsClient<CloseableHttpClient> {
 
         public CustomSSLSocketFactory(final SSLContext sslContext,
                                       final Metric.SSLMetric sslMetrics) {
-            super(sslContext, new CustomAllowAllHostnameVerifier());
+            super(sslContext, new NoopHostnameVerifier());
             this.sslMetrics = sslMetrics;
         }
 
@@ -133,52 +136,18 @@ public class ApacheHttpsClient extends HttpsClient<CloseableHttpClient> {
         }
 
         public Socket recordSslHandshakeTime(final Callable<Socket> handshakeFn) {
-            if (this.sslMetrics != null) {
-                final long startTime = System.nanoTime();
-                try {
-                    return handshakeFn.call();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                } finally {
+            try {
+                if (this.sslMetrics != null) {
+                    final long startTime = System.nanoTime();
+                    final Socket socket = handshakeFn.call();
                     this.sslMetrics.addMetric(elapsedTime(startTime).doubleValue());
-                }
-            } else {
-                try {
+                    return socket;
+                } else {
                     return handshakeFn.call();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
                 }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-        }
-    }
-
-    public static class CustomAllowAllHostnameVerifier implements X509HostnameVerifier {
-
-        public final void verify(final String host, final SSLSocket ssl)
-                throws IOException {
-            //Allow everything
-        }
-
-        public final void verify(final String host, final X509Certificate cert)
-                throws SSLException {
-            verify(host, null, null);
-        }
-
-
-        public final boolean verify(final String host, final SSLSession session) {
-            return true;
-        }
-
-        public final void verify(
-                final String host,
-                final String[] cns,
-                final String[] subjectAlts) {
-            // Allow everything
-        }
-
-        @Override
-        public final String toString() {
-            return "CUSTOM_ALLOW_ALL_HOSTNAME_VERIFIER";
         }
     }
 }

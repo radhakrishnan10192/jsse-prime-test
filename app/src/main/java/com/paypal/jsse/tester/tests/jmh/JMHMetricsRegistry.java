@@ -1,6 +1,7 @@
-package com.paypal.jsse.benchmark.client.metrics;
+package com.paypal.jsse.tester.tests.jmh;
 
 
+import com.paypal.jsse.tester.client.metrics.MetricsRegistry;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;

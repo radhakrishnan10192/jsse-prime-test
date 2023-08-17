@@ -1,12 +1,12 @@
-package com.paypal.jsse.benchmark.config;
+package com.paypal.jsse.tester.config;
 
-import com.paypal.jsse.benchmark.client.ApacheHttpsClient;
-import com.paypal.jsse.benchmark.client.HttpsClient;
-import com.paypal.jsse.benchmark.client.ReactorNettyHttpsClient;
-import com.paypal.jsse.benchmark.client.jmh.HttpsCallBenchmark;
-import com.paypal.jsse.benchmark.client.metrics.MetricsRegistry;
-import com.paypal.jsse.benchmark.server.HttpsServer;
-import com.paypal.jsse.benchmark.server.ReactorNettyHttpsServer;
+import com.paypal.jsse.tester.client.ApacheHttpsClient;
+import com.paypal.jsse.tester.client.HttpsClient;
+import com.paypal.jsse.tester.client.ReactorNettyHttpsClient;
+import com.paypal.jsse.tester.tests.jmh.HttpsCallBenchmark;
+import com.paypal.jsse.tester.client.metrics.MetricsRegistry;
+import com.paypal.jsse.tester.server.HttpsServer;
+import com.paypal.jsse.tester.server.ReactorNettyHttpsServer;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -19,17 +19,24 @@ public class JsseTestSysProps {
 
     public static class ServerConfig {
 
-        String DEFAULT_SERVER_HOST = "127.0.0.1";
-        int DEFAULT_SERVER_PORT = 6443;
-        String SERVER_HOST_PROP = "test.server.host";
-        String SERVER_PORT_PROP = "test.server.port";
+        private static final String DEFAULT_SERVER_HOST = "127.0.0.1";
+        private static final int DEFAULT_SERVER_PORT = 6443;
+        private static final String SERVER_HOST_PROP = "test.server.host";
+        private static final String SERVER_PORT_PROP = "test.server.port";
+
+        private static final String START_EMBEDDED_SVR_PROD = "start.embedded.server";
 
         private final String host;
         private final int port;
 
+        private final boolean startEmbeddedServer;
+
+
+
         public ServerConfig() {
             this.host = readProperty(SERVER_HOST_PROP, String.class, DEFAULT_SERVER_HOST);
             this.port = readProperty(SERVER_PORT_PROP, Integer.class, DEFAULT_SERVER_PORT);
+            this.startEmbeddedServer = readProperty(START_EMBEDDED_SVR_PROD, Boolean.class, false);
         }
 
         public String getHost() {
@@ -38,6 +45,10 @@ public class JsseTestSysProps {
 
         public int getPort() {
             return port;
+        }
+
+        public boolean isStartEmbeddedServer() {
+            return startEmbeddedServer;
         }
     }
 
@@ -115,18 +126,6 @@ public class JsseTestSysProps {
         }
     }
 
-    public static class HttpCallBenchmarkConfig {
-
-        final boolean startEmbeddedServer;
-
-        public HttpCallBenchmarkConfig() {
-            this.startEmbeddedServer = readProperty("start.embedded.server", Boolean.class, false);
-        }
-
-        public boolean isStartEmbeddedServer() {
-            return startEmbeddedServer;
-        }
-    }
 
     public static class JMHConfig {
         final int forks;
@@ -273,13 +272,19 @@ public class JsseTestSysProps {
 
         private static final String NO_OF_CONCURRENT_USERS = "concurrent.users";
         private static final String EXECUTION_TIME_IN_SECS = "execution.time.secs";
+        private static final String WARMUP_TIME_IN_SECS = "warmup.time.secs";
+        private static final String DELAY_BETWEEN_CALLS_IN_MS = "delay.between.call.ms";
 
         private final int numberOfConcurrentUsers;
         private final int executionTimeInSecs;
+        private final int warmupTimeInSecs;
+        private final int delayBetweenCallsInMs;
 
         public LoadSimulatorConfig() {
             this.numberOfConcurrentUsers = readProperty(NO_OF_CONCURRENT_USERS, Integer.class, 2);
             this.executionTimeInSecs = readProperty(EXECUTION_TIME_IN_SECS, Integer.class, 60);
+            this.warmupTimeInSecs = readProperty(WARMUP_TIME_IN_SECS, Integer.class, 30);
+            this.delayBetweenCallsInMs = readProperty(DELAY_BETWEEN_CALLS_IN_MS, Integer.class, 0);
         }
 
         public int getNumberOfConcurrentUsers() {
@@ -288,6 +293,13 @@ public class JsseTestSysProps {
 
         public int getExecutionTimeInSecs() {
             return executionTimeInSecs;
+        }
+
+        public int getWarmupTimeInSecs() {
+            return warmupTimeInSecs;
+        }
+        public int getDelayBetweenCallsInMs() {
+            return delayBetweenCallsInMs;
         }
     }
 }

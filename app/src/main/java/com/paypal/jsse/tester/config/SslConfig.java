@@ -1,4 +1,4 @@
-package com.paypal.jsse.benchmark.config;
+package com.paypal.jsse.tester.config;
 
 import com.paypal.jsse.test.ssl.SSLContextFactory;
 import org.slf4j.Logger;

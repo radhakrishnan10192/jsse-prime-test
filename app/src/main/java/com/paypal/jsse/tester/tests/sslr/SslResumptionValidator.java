@@ -1,9 +1,9 @@
-package com.paypal.jsse.benchmark.client.sslr;
+package com.paypal.jsse.tester.tests.sslr;
 
 import com.paypal.infra.ssl.PayPalSSLSession;
-import com.paypal.jsse.benchmark.client.HttpsClient;
-import com.paypal.jsse.benchmark.client.ReactorNettyHttpsClient;
-import com.paypal.jsse.benchmark.server.ReactorNettyHttpsServer;
+import com.paypal.jsse.tester.client.HttpsClient;
+import com.paypal.jsse.tester.client.ReactorNettyHttpsClient;
+import com.paypal.jsse.tester.server.ReactorNettyHttpsServer;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -23,7 +23,7 @@ public class SslResumptionValidator {
 
     private static final String SESSION_CAPTURE_HANDLER = "SSL_SESSION_CAPTURE_HANDLER";
 
-    private SSLSession sslSession;
+    private SSLSession sslSession = null;
 
     public SslResumptionValidator() {
         new ReactorNettyHttpsServer();
