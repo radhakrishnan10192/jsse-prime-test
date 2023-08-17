@@ -116,7 +116,7 @@ public class JsseTestSysProps {
         }
 
         public static String clientTypePropVal() {
-            return readProperty(CLIENT_TYPE_PARAM, String.class, APACHE_HTTP_CLIENT.shortName);
+            return readProperty(CLIENT_TYPE_PARAM, String.class, REACTOR_NETTY_CLIENT.shortName);
         }
 
         public static Optional<ClientType> getClientType(final String shortName) {
