@@ -109,6 +109,24 @@
             </dependencies>
         </profile>
         <profile>
+            <id>mock-jsse</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.paypal.jsse.test</groupId>
+                    <artifactId>infra-jsse-cache-provider</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.paypal.jsse.test</groupId>
+                    <artifactId>mock-ssl-context</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>infra-jsse</id>
             <dependencies>
                 <dependency>
@@ -120,21 +138,6 @@
                     <groupId>com.paypal.security</groupId>
                     <artifactId>infra-jsse-cache-provider</artifactId>
                     <version>2.1.0</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>mock-jsse</id>
-            <dependencies>
-                <dependency>
-                    <groupId>com.paypal.jsse.test</groupId>
-                    <artifactId>infra-jsse-cache-provider</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.paypal.jsse.test</groupId>
-                    <artifactId>mock-ssl-context</artifactId>
-                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
         </profile>

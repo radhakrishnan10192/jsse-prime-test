@@ -11,7 +11,6 @@ import org.openjdk.jmh.annotations.TearDown;
 
 @State(Scope.Benchmark)
 public class HttpsCallBenchmark implements TestExecutor {
-
     private HttpsClient<?> client;
     private HttpsServer<?> server;
     private JMHMetricsRegistry metricsRegistry;

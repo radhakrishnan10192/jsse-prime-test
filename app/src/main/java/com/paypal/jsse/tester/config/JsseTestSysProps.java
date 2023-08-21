@@ -31,8 +31,6 @@ public class JsseTestSysProps {
 
         private final boolean startEmbeddedServer;
 
-
-
         public ServerConfig() {
             this.host = readProperty(SERVER_HOST_PROP, String.class, DEFAULT_SERVER_HOST);
             this.port = readProperty(SERVER_PORT_PROP, Integer.class, DEFAULT_SERVER_PORT);

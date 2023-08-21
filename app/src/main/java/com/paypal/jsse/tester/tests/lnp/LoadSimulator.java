@@ -43,13 +43,13 @@ public interface LoadSimulator {
                     }
                 });
             }
-            logProgress(executionTimeInMillis, 5000);
+            logProgress(testType, executionTimeInMillis, 5000);
             logger.info("{} Test Progress: 100%", testType);
 
             // Shutdown the executor
             executorService.shutdown();
             boolean executionStatus = executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-            logger.debug("{} test execution successful: {}" , noOfConcurrentUsers, executionStatus);
+            logger.info("{} test execution successful: {}\n\n" , testType, executionStatus);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -63,12 +63,13 @@ public interface LoadSimulator {
         }
     }
 
-    static void logProgress(final long executionTimeInMillis,
-                                    final long intervalInMillis) throws InterruptedException {
+    static void logProgress(final TestType testType,
+                            final long executionTimeInMillis,
+                            final long intervalInMillis) throws InterruptedException {
         // Print progress indicators
         long elapsedTime = 0;
         while (elapsedTime < executionTimeInMillis) {
-            logger.info("Load Test Progress: {}%", (int) ((double) elapsedTime / executionTimeInMillis * 100));
+            logger.info("{} Test Progress: {}%", testType, (int) ((double) elapsedTime / executionTimeInMillis * 100));
             Thread.sleep(intervalInMillis);
             elapsedTime += intervalInMillis;
         }

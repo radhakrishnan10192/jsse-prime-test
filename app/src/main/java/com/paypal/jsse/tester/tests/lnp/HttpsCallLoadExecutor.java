@@ -7,6 +7,11 @@ import com.paypal.jsse.tester.server.HttpsServer;
 
 import java.util.Optional;
 
+/**
+ * Perform load test on the client HTTPs calls to server.
+ * See @{@link com.paypal.jsse.tester.config.JsseTestSysProps.LoadSimulatorConfig} for list of available
+ * configurations and defaults.
+ */
 public class HttpsCallLoadExecutor implements TestExecutor {
     public HttpsCallLoadExecutor() {
         final Optional<HttpsServer<?>> httpsServer = initializeTestServer();
