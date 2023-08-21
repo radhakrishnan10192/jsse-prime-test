@@ -15,28 +15,33 @@ public abstract class HttpsClient<C> implements SslConfig  {
 
     protected final String baseUrl;
 
-    public HttpsClient() {
-        this(null);
+    protected final MetricsRegistry metricsRegistry;
+
+    protected final boolean resumptionTest;
+
+    public HttpsClient(boolean resumptionTest) {
+        this(null, resumptionTest);
     }
 
-    public HttpsClient(final MetricsRegistry metricsRegistry) {
-        this(new JsseTestSysProps.ServerConfig(), metricsRegistry);
+    public HttpsClient(final MetricsRegistry metricsRegistry,
+                       final boolean resumptionTest) {
+        this(new JsseTestSysProps.ServerConfig(), metricsRegistry, resumptionTest);
     }
 
     public HttpsClient(final JsseTestSysProps.ServerConfig serverConfig,
-                       final MetricsRegistry metricsRegistry) {
-        this(serverConfig.getHost(), serverConfig.getPort(), metricsRegistry);
+                       final MetricsRegistry metricsRegistry,
+                       final boolean resumptionTest) {
+        this(serverConfig.getHost(), serverConfig.getPort(), metricsRegistry, resumptionTest);
     }
 
     public HttpsClient(final String host,
                        final int port,
-                       final MetricsRegistry metricsRegistry) {
-        if(metricsRegistry != null) {
-            this.client = createHttpsClient(host, port, createSslContext(true), metricsRegistry);
-        } else {
-            this.client = createHttpsClient(host, port, createSslContext(true));
-        }
+                       final MetricsRegistry metricsRegistry,
+                       final boolean resumptionTest) {
+        this.metricsRegistry = metricsRegistry;
         this.baseUrl = createBaseUrl(host, port);
+        this.resumptionTest = resumptionTest;
+        this.client = createHttpsClient(host, port, createSslContext(true));
         logger.info("{} HTTPS client initialized...", clientName());
     }
 
@@ -46,11 +51,6 @@ public abstract class HttpsClient<C> implements SslConfig  {
     }
 
     abstract protected C createHttpsClient(final String host,
-                                           final int port,
-                                           final SSLContext sslContext,
-                                           final MetricsRegistry metricsRegistry);
-
-    protected abstract C createHttpsClient(final String host,
                                            final int port,
                                            final SSLContext sslContext);
 

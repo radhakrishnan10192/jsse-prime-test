@@ -21,12 +21,13 @@ public interface TestExecutor {
         return Optional.empty();
     }
 
-    default HttpsClient<?> initializeTestClient(MetricsRegistry metricsRegistry) {
+    default HttpsClient<?> initializeTestClient(final MetricsRegistry metricsRegistry,
+                                                final boolean resumptionTest) {
         final String clientType = JsseTestSysProps.ClientType.clientTypePropVal();
         final Optional<JsseTestSysProps.ClientType> clientTypeOpt = JsseTestSysProps.ClientType.getClientType(clientType);
 
         return clientTypeOpt.
-                map(clType -> clType.getClient().apply(metricsRegistry))
+                map(clType -> clType.getClient().apply(metricsRegistry, resumptionTest))
                 .orElseThrow(() -> new RuntimeException("Invalid client type : " + clientType));
     }
 }

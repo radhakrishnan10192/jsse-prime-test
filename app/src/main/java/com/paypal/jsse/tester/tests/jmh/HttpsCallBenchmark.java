@@ -20,7 +20,7 @@ public class HttpsCallBenchmark implements TestExecutor {
     public void setup(final JMHMetricsRegistry metricsRegistry) {
         this.server = initializeTestServer().orElse(null);
         this.metricsRegistry = metricsRegistry;
-        client = initializeTestClient(this.metricsRegistry);
+        client = initializeTestClient(this.metricsRegistry, false);
     }
 
     @Benchmark

@@ -3,14 +3,14 @@ package com.paypal.jsse.tester.config;
 import com.paypal.jsse.tester.client.ApacheHttpsClient;
 import com.paypal.jsse.tester.client.HttpsClient;
 import com.paypal.jsse.tester.client.ReactorNettyHttpsClient;
-import com.paypal.jsse.tester.tests.jmh.HttpsCallBenchmark;
 import com.paypal.jsse.tester.client.metrics.MetricsRegistry;
 import com.paypal.jsse.tester.server.HttpsServer;
 import com.paypal.jsse.tester.server.ReactorNettyHttpsServer;
+import com.paypal.jsse.tester.tests.jmh.HttpsCallBenchmark;
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import static com.paypal.jsse.test.config.SysPropsReader.readProperty;
@@ -97,12 +97,12 @@ public class JsseTestSysProps {
         );
 
         private final String shortName;
-        private final Function<MetricsRegistry, HttpsClient<?>> client;
+        private final BiFunction<MetricsRegistry, Boolean, HttpsClient<?>> client;
 
         private static final String CLIENT_TYPE_PARAM = "client.type";
 
         ClientType(final String shortName,
-                   final Function<MetricsRegistry, HttpsClient<?>> client) {
+                   final BiFunction<MetricsRegistry, Boolean, HttpsClient<?>> client) {
             this.shortName = shortName;
             this.client = client;
         }
@@ -111,7 +111,7 @@ public class JsseTestSysProps {
             return shortName;
         }
 
-        public Function<MetricsRegistry, HttpsClient<?>> getClient() {
+        public BiFunction<MetricsRegistry, Boolean, HttpsClient<?>> getClient() {
             return client;
         }
 

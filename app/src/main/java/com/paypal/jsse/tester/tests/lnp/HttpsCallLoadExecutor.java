@@ -12,7 +12,7 @@ public class HttpsCallLoadExecutor implements TestExecutor {
         final Optional<HttpsServer<?>> httpsServer = initializeTestServer();
         try {
             final MetricsRegistry metricsRegistry = new MetricsRegistry();
-            final HttpsClient<?> httpsClient = initializeTestClient(metricsRegistry);
+            final HttpsClient<?> httpsClient = initializeTestClient(metricsRegistry, false);
             final LoadSimulator loadSimulator = () -> httpsClient::executeHttpsCall;
             loadSimulator.execute(LoadSimulator.TestType.Warmup);
             metricsRegistry.resetAll();

@@ -28,33 +28,33 @@ public class ApacheHttpsClient extends HttpsClient<CloseableHttpClient> {
 
     private static final Logger logger = LoggerFactory.getLogger(ApacheHttpsClient.class);
 
-    public ApacheHttpsClient(MetricsRegistry metricsRegistry) {
-        super(metricsRegistry);
+    public ApacheHttpsClient(final MetricsRegistry metricsRegistry,
+                             final Boolean resumptionTest) {
+        super(metricsRegistry, resumptionTest);
     }
 
     @Override
-    public CloseableHttpClient createHttpsClient(String host,
-                                                 int port,
-                                                 SSLContext sslContext,
-                                                 MetricsRegistry metricsRegistry) {
-        final Metric.SSLMetric sslMetrics = new Metric.SSLMetric();
-        metricsRegistry.addMetric(sslMetrics);
-        return HttpClients.custom()
-                .setSSLSocketFactory(new CustomSSLSocketFactory(sslContext, sslMetrics))
+    public CloseableHttpClient createHttpsClient(final String host,
+                                                 final int port,
+                                                 final SSLContext sslContext) {
+        return HttpClients
+                .custom()
+                .setSSLSocketFactory(createCustomSSLSocketFactory(sslContext))
                 .build();
     }
 
-    @Override
-    protected CloseableHttpClient createHttpsClient(String host,
-                                                    int port,
-                                                    SSLContext sslContext) {
-        return HttpClients.custom()
-                .setSSLSocketFactory(new CustomSSLSocketFactory(sslContext))
-                .build();
+    private CustomSSLSocketFactory createCustomSSLSocketFactory(final SSLContext sslContext) {
+        if(metricsRegistry != null) {
+            final Metric.SSLMetric sslMetrics = new Metric.SSLMetric();
+            this.metricsRegistry.addMetric(sslMetrics);
+            return new CustomSSLSocketFactory(sslContext, sslMetrics, resumptionTest);
+        } else {
+            return new CustomSSLSocketFactory(sslContext, resumptionTest);
+        }
     }
 
     @Override
-    public String executeHttpsCall(String path) {
+    public String executeHttpsCall(final String path) {
         try {
             final String url = baseUrl + "/" + path;
             final HttpGet httpGet = new HttpGet(url);
@@ -75,14 +75,19 @@ public class ApacheHttpsClient extends HttpsClient<CloseableHttpClient> {
 
         private final Metric.SSLMetric sslMetrics;
 
-        public CustomSSLSocketFactory(final SSLContext sslContext) {
-            this(sslContext, null);
+        private final boolean resumptionTest;
+
+        public CustomSSLSocketFactory(final SSLContext sslContext,
+                                      final boolean resumptionTest) {
+            this(sslContext, null, resumptionTest);
         }
 
         public CustomSSLSocketFactory(final SSLContext sslContext,
-                                      final Metric.SSLMetric sslMetrics) {
+                                      final Metric.SSLMetric sslMetrics,
+                                      final boolean resumptionTest) {
             super(sslContext, new NoopHostnameVerifier());
             this.sslMetrics = sslMetrics;
+            this.resumptionTest = resumptionTest;
         }
 
         @Override
@@ -128,7 +133,7 @@ public class ApacheHttpsClient extends HttpsClient<CloseableHttpClient> {
                 return sock;
             }
             final Socket sslSocket = recordSslHandshakeTime(() -> createLayeredSocket(sock, host.getHostName(), remoteAddress.getPort(), context));
-            if(logger.isDebugEnabled()) {
+            if(logger.isDebugEnabled() || resumptionTest) {
                 final SSLSession session = ((SSLSocket) sslSocket).getSession();
                 logSessionInfo(session instanceof PayPalSSLSession, session);
             }
