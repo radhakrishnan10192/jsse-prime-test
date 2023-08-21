@@ -110,9 +110,6 @@
         </profile>
         <profile>
             <id>mock-jsse</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <dependencies>
                 <dependency>
                     <groupId>com.paypal.jsse.test</groupId>
