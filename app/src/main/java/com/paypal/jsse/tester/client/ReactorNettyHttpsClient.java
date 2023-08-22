@@ -27,12 +27,6 @@ import java.math.BigDecimal;
 public class ReactorNettyHttpsClient extends HttpsClient<HttpClient> {
     private static final Logger logger = LoggerFactory.getLogger(ReactorNettyHttpsClient.class);
 
-    private static final String SESSION_LOGGER_HANDLER = "SSL_SESSION_LOGGER_HANDLER";
-
-    public ReactorNettyHttpsClient(final Boolean resumptionTest) {
-        super(resumptionTest);
-    }
-
     public ReactorNettyHttpsClient(final MetricsRegistry metricsRegistry,
                                    final Boolean resumptionTest) {
         super(metricsRegistry, resumptionTest);
@@ -71,6 +65,7 @@ public class ReactorNettyHttpsClient extends HttpsClient<HttpClient> {
                 .uri(path)
                 .responseSingle((resp, bytes) -> bytes.asString())
                 .doOnError(throwable -> logger.debug(throwable.getMessage(), throwable))
+                .onErrorReturn("failed")
                 .block();
         if(logger.isDebugEnabled()) {
             logger.debug("Response: " + response);
