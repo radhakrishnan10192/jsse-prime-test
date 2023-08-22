@@ -138,6 +138,7 @@ public class JsseTestSysProps {
         final boolean enableGCProfiler;
         final int threads;
         final String benchmarkTester;
+        final String timeUnit;
 
         public JMHConfig() {
             this.forks = readProperty("jmh.forks", Integer.class, 1);
@@ -152,6 +153,7 @@ public class JsseTestSysProps {
             this.enableGCProfiler = readProperty("jmh.enable.gc.profiler", Boolean.class, false);
             this.threads = readProperty("jmh.threads", Integer.class, Runtime.getRuntime().availableProcessors());
             this.benchmarkTester = readProperty("jmh.benchmark.testClass", String.class, HttpsCallBenchmark.class.getSimpleName());
+            this.timeUnit = readProperty("jmh.time.unit", String.class, "MILLISECONDS");
         }
 
         public int getForks() {
@@ -200,6 +202,10 @@ public class JsseTestSysProps {
 
         public int getMeasurementBatchSize() {
             return measurementBatchSize;
+        }
+
+        public String getTimeUnit() {
+            return timeUnit;
         }
     }
 

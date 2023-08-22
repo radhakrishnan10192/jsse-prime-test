@@ -36,7 +36,7 @@ public class JmhExecutor {
                     .result(String.format("benchmark-%s-%s.json",
                             jmhConfig.getBenchmarkTester(),
                             System.getProperty("java.version")))
-                    .timeUnit(TimeUnit.MILLISECONDS);
+                    .timeUnit(TimeUnit.valueOf(jmhConfig.getTimeUnit()));
             if(jmhConfig.getWarmupBatchSize() > 0) {
                 optionsBuilder.warmupBatchSize(jmhConfig.getWarmupBatchSize());
             }
