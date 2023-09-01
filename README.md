@@ -29,7 +29,7 @@ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dtest.mode=start-server" -P
 ```
 
 #### client-lnp
-Perform lnp on client HTTPS calls to server. 
+Perform lnp on client HTTPS calls to server.
 
 **Sample command**
 ```shell
@@ -42,7 +42,7 @@ mvn spring-boot:run \
 ```
 
 #### sslr
-Performs an SSL resumption test. 
+Performs an SSL resumption test.
 
 **Sample command**
 ```shell
