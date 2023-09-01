@@ -17,6 +17,11 @@ import java.util.concurrent.TimeUnit;
 
 import static org.openjdk.jmh.runner.options.TimeValue.milliseconds;
 
+/**
+ * JMH test executor on client HTTPS calls to server.
+ * See {@link JsseTestSysProps.JMHConfig} for the list for list of available
+ * configurations and defaults.
+ */
 public class JmhExecutor {
     private static final Logger logger = LoggerFactory.getLogger(JmhExecutor.class);
 
