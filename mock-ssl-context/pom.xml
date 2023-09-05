@@ -36,7 +36,9 @@
         <dependency>
             <groupId>com.paypal.jsse.test</groupId>
             <artifactId>infra-jsse-cache-provider</artifactId>
-            <version>${project.version}</version>
+            <version>2.2.0-AZUL</version>
+            <scope>system</scope>
+            <systemPath>${project.parent.basedir}/libs/infra-jsse-cache-provider-2.2.0-AZUL.jar</systemPath>
         </dependency>
     </dependencies>
 
