@@ -83,9 +83,9 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>com.paypal.jsse.test</groupId>
-                    <artifactId>infra-jsse-232</artifactId>
-                    <version>${project.version}</version>
+                    <groupId>com.ebayinc.platform.security</groupId>
+                    <artifactId>infra-jsse</artifactId>
+                    <version>8.212.10</version>
                 </dependency>
             </dependencies>
         </profile>
