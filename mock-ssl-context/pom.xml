@@ -52,7 +52,9 @@
                 <dependency>
                     <groupId>com.paypal.jsse.test</groupId>
                     <artifactId>infra-jsse-232</artifactId>
-                    <version>${project.version}</version>
+                    <version>8.212.10</version>
+                    <scope>system</scope>
+                    <systemPath>${project.basedir}/libs/infra-jsse-8.212.10.jar</systemPath>
                 </dependency>
             </dependencies>
         </profile>
