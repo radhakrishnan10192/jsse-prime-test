@@ -85,6 +85,7 @@ public class ReactorNettyHttpsClient extends HttpsClient<HttpClient> {
 
         public SslHandshakeTimeRecorder(final Metric.SSLMetric sslMetrics,
                                         final boolean resumptionTest) {
+            System.out.println("Metric.SSLMetric : " + sslMetrics);
             this.sslMetrics = sslMetrics;
             this.resumptionTest = resumptionTest;
         }
@@ -96,6 +97,8 @@ public class ReactorNettyHttpsClient extends HttpsClient<HttpClient> {
                     .handshakeFuture();
             handshakeFuture.addListener(f -> {
                 ctx.pipeline().remove(this);
+
+                System.out.println("elapsedTime : " + elapsedTime(tlsHandshakeTimeStart));
                 if(sslMetrics != null) {
                     final BigDecimal elapsedTime = elapsedTime(tlsHandshakeTimeStart);
                     sslMetrics.addMetric(elapsedTime.doubleValue());
