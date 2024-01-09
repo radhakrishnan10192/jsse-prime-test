@@ -4,6 +4,9 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 public interface Metric {
 
     Logger logger = LoggerFactory.getLogger(Metric.class);
@@ -16,6 +19,8 @@ public interface Metric {
 
 
     abstract class HistogramMetric implements Metric {
+
+        private static final AtomicLong ATOMIC_LONG = new AtomicLong(0);
         private final DescriptiveStatistics statistics;
 
         public HistogramMetric() {
@@ -26,6 +31,7 @@ public interface Metric {
 
         @Override
         public void addMetric(final double data) {
+            ATOMIC_LONG.incrementAndGet();
             this.statistics.addValue(data);
         }
 
@@ -36,6 +42,7 @@ public interface Metric {
 
         @Override
         public void report() {
+            System.out.println("Handshake count : " + ATOMIC_LONG.get());
             if(statistics.getN() > 0) {
                 logger.info("\n\nMetrics for {}", metricName());
                 logger.info("\n25th percentile: {}", statistics.getPercentile(25));
