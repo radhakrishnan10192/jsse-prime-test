@@ -32,11 +32,11 @@
         <appender-ref ref="CONSOLE-MIN"/>
     </logger>
 
-    <logger name="io.netty.channel.ChannelInitializer" level="error"/>
+    <logger name="io.netty.channel.ChannelInitializer" level="info"/>
 
-    <logger name="io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider" level="error" />
+    <logger name="io.netty.resolver.dns.UnixResolverDnsServerAddressStreamProvider" level="info" />
 
-    <logger name="reactor.netty.http.client.HttpClientConnect" level="error"/>
+    <logger name="reactor.netty.http.client.HttpClientConnect" level="info"/>
 
     <root level="info">
         <appender-ref ref="CONSOLE"/>
