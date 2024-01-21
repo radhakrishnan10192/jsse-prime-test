@@ -26,8 +26,6 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-common</artifactId>
             <version>4.1.94.Final</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/netty-common-4.1.94.Final.jar</systemPath>
         </dependency>
 
         <dependency>
